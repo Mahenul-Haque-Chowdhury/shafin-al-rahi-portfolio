@@ -26,10 +26,10 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative`}
       >
         <DarkVeilBackground />
-        <div className="app-enter">{children}</div>
+        <div className="app-enter relative z-10">{children}</div>
       </body>
     </html>
   );
