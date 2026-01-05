@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import {
   Briefcase,
   GraduationCap,
@@ -11,38 +11,46 @@ import {
   Mail,
   Phone,
   MapPin,
-  Heart, // Added for Hobbies
+  Heart,
+  ArrowUp,
+  Calendar,
+  ExternalLink,
 } from "lucide-react";
-import SmoothScrollLink from "@/components/SmoothScrollLink";
-import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [activeSection, setActiveSection] = useState("");
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [isNavOpen, setIsNavOpen] = useState(false);
 
+  // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 40);
+      setShowBackToTop(window.scrollY > 300);
+      
+      // Simple scroll spy logic
+      const sections = ["about", "experience", "education", "skills", "contact"];
+      const current = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top >= 0 && rect.top <= 300;
+        }
+        return false;
+      });
+      if (current) setActiveSection(current);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsNavOpen(false);
-    };
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace("#", "");
+    const elem = document.getElementById(targetId);
+    elem?.scrollIntoView({ behavior: "smooth" });
+  };
 
-    if (!isNavOpen) return;
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isNavOpen]);
-
-  // UPDATED: Skills based on your request
+  // --- DATA PRESERVED FROM ORIGINAL ---
   const skills = [
     "Organising events",
     "Volunteering",
@@ -54,7 +62,6 @@ export default function Home() {
     "Dispatching procedures",
   ];
 
-  // NEW: Hobbies Array
   const hobbies = [
     "Travelling",
     "Trekking",
@@ -76,7 +83,6 @@ export default function Home() {
     },
   };
 
-  // NOTE: You will need to add your actual profile links here
   const socials = [
     {
       label: "LinkedIn",
@@ -95,451 +101,286 @@ export default function Home() {
     },
   ];
 
-  const navLinks = [
-    { label: "About", href: "#about" },
-    { label: "Skills", href: "#skills" },
-    { label: "Experience", href: "#experience" },
-    { label: "Education", href: "#education" },
-    { label: "Contact", href: "#contact" },
-  ];
-
-  // UPDATED: Experience from the uploaded Resume image
   const experience = [
     {
       role: "Head of Marketing",
       company: "GrayVally Software Solutions",
       companyUrl: "https://grayvally.tech",
       period: "Dec 2025 — Present",
-      bullets: [
-        "Leading marketing initiatives and brand communication.",
-      ],
+      current: true,
+      bullets: ["Leading marketing initiatives and brand communication."],
     },
     {
       role: "Owner",
       company: "Vephyr (Luxury Clothing Company)",
       period: "Present",
+      current: true,
       bullets: [],
     },
     {
       role: "Freight Dispatcher",
       company: "Auto Transport LLC",
       period: "Oct 2023 — Dec 2024",
+      current: false,
       bullets: [
-        "Managed communication between the dispatch centre and field personnel, facilitating effective response to calls for service.",
+        "Managed communication between the dispatch centre and field personnel.",
         "Gave directions to drivers to help in finding client's addresses.",
         "Prepared reports for management with recommendations for strategic decision-making.",
-        "Used different communication channels and devices to convey time-critical information.",
+        "Used different communication channels to convey time-critical information.",
       ],
     },
     {
       role: "Event Manager",
       company: "Shahajjer Dakpion",
       period: "Jun 2015 — Jun 2020",
+      current: false,
       bullets: [
-        "Gained sufficient expertise in managing events of different occasions ranging from seminars, conferences, and donation programs.",
-        "Established basic systems and procedures necessary to make the flow smooth throughout the experience.",
-        "Utilized strong foundation in digital/graphical presentations and communication skills to gain a wide group of clients.",
+        "Managed events ranging from seminars, conferences, and donation programs.",
+        "Established systems to make the flow smooth throughout the experience.",
+        "Utilized strong foundation in digital/graphical presentations.",
       ],
     },
   ];
 
-  // UPDATED: Education from the uploaded Resume image
   const education = [
     {
       title: "Bachelor of Business Administration",
       school: "University Of Liberal Arts Bangladesh",
       period: "2021 — Current",
-      details: [],
     },
     {
       title: "High School Diploma",
       school: "Onnesha International School & College",
       period: "2004 — 2018",
-      details: [],
     },
   ];
 
   return (
-    <div
-      id="top"
-      className="min-h-screen bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 selection:bg-zinc-900 selection:text-white"
-    >
-      <header className="border-b border-zinc-200/70 dark:border-zinc-800/70">
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                Portfolio
-              </p>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-                {profile.name}
-              </h1>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                {profile.role}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between gap-3 sm:block">
-              <button
-                type="button"
-                className="sm:hidden inline-flex items-center justify-center rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-white/70 dark:bg-zinc-950/40 px-4 py-2 text-sm font-semibold text-zinc-800 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-                aria-label="Toggle navigation"
-                aria-expanded={isNavOpen}
-                onClick={() => setIsNavOpen((v) => !v)}
+    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 selection:bg-zinc-900 selection:text-zinc-50">
+      
+      {/* --- FLOATING NAVIGATION --- */}
+      <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+        <div className="flex items-center gap-1 rounded-full border border-zinc-200 bg-white/80 p-1.5 shadow-lg shadow-zinc-200/20 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/80 dark:shadow-none">
+          {["About", "Experience", "Skills", "Contact"].map((item) => {
+            const id = item.toLowerCase();
+            const isActive = activeSection === id;
+            return (
+              <a
+                key={item}
+                href={`#${id}`}
+                onClick={(e) => scrollToSection(e, `#${id}`)}
+                className={`px-4 py-2 text-sm font-medium transition-all rounded-full ${
+                  isActive 
+                    ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900" 
+                    : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800"
+                }`}
               >
-                Menu
-                <span className="ml-3 flex flex-col gap-1">
-                  <span className="h-0.5 w-5 bg-zinc-900 dark:bg-zinc-100" />
-                  <span className="h-0.5 w-5 bg-zinc-900 dark:bg-zinc-100" />
-                  <span className="h-0.5 w-5 bg-zinc-900 dark:bg-zinc-100" />
+                {item}
+              </a>
+            );
+          })}
+        </div>
+      </nav>
+
+      <main className="mx-auto max-w-3xl px-6 pt-32 pb-20">
+        
+        {/* --- HERO SECTION --- */}
+        <section id="about" className="flex flex-col items-center text-center space-y-8 mb-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="relative group">
+            <div className="absolute -inset-1 rounded-full bg-linear-to-r from-zinc-200 to-zinc-400 opacity-50 blur dark:from-zinc-700 dark:to-zinc-900 group-hover:opacity-75 transition duration-500"></div>
+            <div className="relative h-44 w-44 overflow-hidden rounded-full border-4 border-white shadow-xl sm:h-52 sm:w-52 md:h-60 md:w-60 dark:border-zinc-900">
+              <Image
+                src={profile.photo.src}
+                alt={profile.photo.alt}
+                fill
+                priority
+                sizes="(max-width: 640px) 176px, (max-width: 768px) 208px, 240px"
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4 max-w-2xl">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+              {profile.name}
+            </h1>
+            <div className="flex flex-wrap justify-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+              <span className="flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 dark:bg-zinc-900">
+                <MapPin size={14} /> {profile.location}
+              </span>
+              <span className="flex items-center gap-1.5 rounded-full bg-zinc-100 px-3 py-1 dark:bg-zinc-900">
+                 Student & Professional
+              </span>
+            </div>
+            <p className="text-lg leading-relaxed text-zinc-600 dark:text-zinc-300">
+              {profile.headline}
+            </p>
+          </div>
+
+          <div className="flex gap-4">
+            {socials.map((s) => (
+              <a
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-xl bg-white border border-zinc-200 text-zinc-500 hover:text-zinc-900 hover:border-zinc-300 hover:shadow-md transition-all dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100"
+              >
+                <s.Icon size={20} />
+              </a>
+            ))}
+            <a href={`mailto:${profile.email}`} className="p-3 rounded-xl bg-zinc-900 text-white hover:bg-zinc-700 hover:shadow-md transition-all dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300">
+              <Mail size={20} />
+            </a>
+          </div>
+        </section>
+
+        {/* --- EXPERIENCE SECTION (TIMELINE) --- */}
+        <section id="experience" className="scroll-mt-32 space-y-12 mb-24">
+          <div className="flex items-center gap-4">
+             <div className="p-2 bg-zinc-100 dark:bg-zinc-900 rounded-lg">
+                <Briefcase size={24} className="text-zinc-900 dark:text-zinc-100" />
+             </div>
+             <h2 className="text-2xl font-bold tracking-tight">Experience</h2>
+          </div>
+
+          <div className="relative border-l-2 border-zinc-200 dark:border-zinc-800 space-y-12 ml-3">
+            {experience.map((item, idx) => (
+              <div key={idx} className="relative pl-8 group">
+                {/* Timeline Dot */}
+                <span className={`absolute -left-2.25 top-1 h-4 w-4 rounded-full border-2 border-white dark:border-zinc-950 ${item.current ? 'bg-green-500' : 'bg-zinc-300 dark:bg-zinc-700'}`}></span>
+                
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                  <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{item.role}</h3>
+                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-900 px-2 py-1 rounded self-start sm:self-auto mt-1 sm:mt-0">
+                    {item.period}
+                  </span>
+                </div>
+                
+                <div className="mb-3">
+                  {item.companyUrl ? (
+                    <a href={item.companyUrl} target="_blank" className="text-sm font-medium text-zinc-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400 flex items-center gap-1 w-fit">
+                      {item.company} <ExternalLink size={12} />
+                    </a>
+                  ) : (
+                    <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{item.company}</p>
+                  )}
+                </div>
+
+                {item.bullets.length > 0 && (
+                  <ul className="list-disc list-outside ml-4 text-sm text-zinc-600 dark:text-zinc-400 space-y-1">
+                    {item.bullets.map((b, i) => (
+                      <li key={i}>{b}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* --- EDUCATION GRID --- */}
+        <section id="education" className="scroll-mt-32 space-y-8 mb-24">
+          <div className="flex items-center gap-4">
+             <div className="p-2 bg-zinc-100 dark:bg-zinc-900 rounded-lg">
+                <GraduationCap size={24} className="text-zinc-900 dark:text-zinc-100" />
+             </div>
+             <h2 className="text-2xl font-bold tracking-tight">Education</h2>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {education.map((edu, idx) => (
+              <div key={idx} className="p-6 rounded-2xl border border-zinc-200 bg-white/50 dark:border-zinc-800 dark:bg-zinc-900/50 hover:bg-white dark:hover:bg-zinc-900 transition-colors">
+                <div className="text-sm text-zinc-500 dark:text-zinc-400 mb-2 flex items-center gap-2">
+                  <Calendar size={14} /> {edu.period}
+                </div>
+                <h3 className="font-bold text-zinc-900 dark:text-zinc-100">{edu.title}</h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">{edu.school}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* --- SKILLS & HOBBIES --- */}
+        <div id="skills" className="grid gap-10 md:grid-cols-2 mb-24 scroll-mt-32">
+          {/* Skills Column */}
+          <section className="space-y-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Briefcase size={20} /> Professional Skills
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {skills.map((skill) => (
+                <span key={skill} className="px-3 py-1.5 text-sm font-medium rounded-lg bg-zinc-100 text-zinc-700 border border-zinc-200 dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-800">
+                  {skill}
                 </span>
-              </button>
-
-              <div className="hidden sm:flex sm:flex-wrap sm:gap-2">
-              {navLinks.map((item) => (
-                <SmoothScrollLink
-                  key={item.label}
-                  href={item.href}
-                  className="shrink-0 whitespace-nowrap rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 px-3 py-1 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-                >
-                  {item.label}
-                </SmoothScrollLink>
-              ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {isNavOpen ? (
-        <div className="sm:hidden fixed inset-0 z-50">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/20"
-            aria-label="Close navigation"
-            onClick={() => setIsNavOpen(false)}
-          />
-          <div className="absolute left-4 right-4 top-6 rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/95 dark:bg-zinc-950/90 backdrop-blur-xl p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
-                Navigation
-              </p>
-              <button
-                type="button"
-                className="rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-white/70 dark:bg-zinc-950/40 px-3 py-1 text-sm font-semibold text-zinc-800 dark:text-zinc-100"
-                onClick={() => setIsNavOpen(false)}
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="mt-3 grid gap-2">
-              {navLinks.map((item) => (
-                <SmoothScrollLink
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsNavOpen(false)}
-                  className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/40 px-4 py-3 text-sm font-semibold text-zinc-800 dark:text-zinc-100"
-                >
-                  {item.label}
-                </SmoothScrollLink>
               ))}
             </div>
-          </div>
+          </section>
+
+          {/* Hobbies Column */}
+          <section className="space-y-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Heart size={20} /> Interests
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {hobbies.map((hobby) => (
+                <span key={hobby} className="px-3 py-1.5 text-sm font-medium rounded-lg bg-white text-zinc-600 border border-zinc-200 dark:bg-zinc-950 dark:text-zinc-400 dark:border-zinc-800">
+                  {hobby}
+                </span>
+              ))}
+            </div>
+          </section>
         </div>
-      ) : null}
 
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-14">
-        <div className="grid gap-10 lg:grid-cols-[340px_1fr] lg:items-start">
-          <aside className="lg:sticky lg:top-10">
-            <div className="rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 backdrop-blur-sm p-6">
-              <div className="flex flex-col items-center text-center">
-                <div className="relative w-full overflow-hidden rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-100 dark:bg-zinc-900 aspect-square">
-                  <Image
-                    src={profile.photo.src}
-                    alt={profile.photo.alt}
-                    fill
-                    priority
-                    unoptimized
-                    sizes="(max-width: 1024px) 80vw, 340px"
-                    className="object-cover"
-                  />
-                </div>
+        {/* --- CONTACT SECTION --- */}
+        <section id="contact" className="scroll-mt-32">
+          <div className="relative rounded-3xl overflow-hidden bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 p-8 sm:p-12 text-center">
+            
+            {/* Background Pattern */}
+            <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <div className="absolute right-0 top-0 h-64 w-64 rounded-full bg-white blur-3xl transform translate-x-1/2 -translate-y-1/2 dark:bg-zinc-900"></div>
+            </div>
 
-                <p className="mt-4 font-semibold leading-tight">{profile.name}</p>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                  {profile.role}
-                </p>
-              </div>
-
-              <p className="mt-5 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                {profile.headline}
+            <div className="relative z-10 space-y-6">
+              <h2 className="text-3xl font-bold">Let&apos;s work together</h2>
+              <p className="text-zinc-400 dark:text-zinc-600 max-w-lg mx-auto">
+                Whether you have a question regarding logistics, event management, or just want to say hello, I&apos;ll try my best to get back to you!
               </p>
-
-              <div className="mt-6 space-y-3 text-sm">
-                <a
-                  href={`mailto:${profile.email}`}
-                  className="flex items-center gap-2 font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white"
-                >
-                  <Mail size={18} />
-                  <span className="break-all">{profile.email}</span>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <a href={`mailto:${profile.email}`} className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white text-zinc-900 font-semibold hover:bg-zinc-100 transition-colors dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
+                  <Mail size={18} /> Send Email
                 </a>
-                <a
-                  href={`tel:${profile.phone.replace(/\s+/g, "")}`}
-                  className="flex items-center gap-2 font-medium text-zinc-700 hover:text-zinc-900 dark:text-zinc-200 dark:hover:text-white"
-                >
-                  <Phone size={18} />
-                  <span className="wrap-break-word">{profile.phone}</span>
+                <a href={`tel:${profile.phone.replace(/\s+/g, "")}`} className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-zinc-700 text-zinc-100 hover:bg-zinc-800 transition-colors dark:border-zinc-300 dark:text-zinc-900 dark:hover:bg-zinc-200">
+                  <Phone size={18} /> {profile.phone}
                 </a>
-                <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
-                  <MapPin size={18} /> {profile.location}
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-wrap items-center gap-2">
-                {socials.map((s) => (
-                  <a
-                    key={s.label}
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 p-2 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-                    aria-label={s.label}
-                    title={s.label}
-                  >
-                    <s.Icon size={18} />
-                  </a>
-                ))}
-              </div>
-
-              <div className="mt-6 rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/40 p-4">
-                <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
-                  <Heart size={14} /> Interests
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {hobbies.map((hobby) => (
-                    <span
-                      key={hobby}
-                      className="rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-white/70 dark:bg-zinc-950/30 px-3 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-200"
-                    >
-                      {hobby}
-                    </span>
-                  ))}
-                </div>
               </div>
             </div>
-          </aside>
-
-          <div className="space-y-10">
-            <section id="about" className="scroll-mt-24">
-              <div className="rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 backdrop-blur-sm p-6 md:p-8">
-                <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                  About
-                </h2>
-
-                <p className="mt-4 text-lg font-semibold tracking-tight">
-                  Logistics dispatching, event coordination, and clear communication.
-                </p>
-                <p className="mt-3 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
-                  I am a Business Administration student and experienced professional with a background in Logistics Dispatching and Event Management. I excel in coordination, communication, and strategic decision-making.
-                </p>
-                <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                  <Link
-                    href="#contact"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors"
-                  >
-                    Get in touch <Mail size={18} />
-                  </Link>
-                  <Link
-                    href="#experience"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 px-5 py-3 text-sm font-semibold text-zinc-800 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
-                  >
-                    See experience <Briefcase size={18} />
-                  </Link>
-                </div>
-              </div>
-            </section>
-
-            <section id="skills" className="scroll-mt-24">
-              <div className="rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 backdrop-blur-sm p-6 md:p-8">
-                <div className="flex items-baseline justify-between gap-4">
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                    Skills
-                  </h2>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    Core strengths
-                  </p>
-                </div>
-
-                <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                  {skills.map((skill) => (
-                    <div
-                      key={skill}
-                      className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/40 px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200"
-                    >
-                      {skill}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            <section id="experience" className="scroll-mt-24">
-              <div className="rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 backdrop-blur-sm overflow-hidden">
-                <div className="p-6 md:p-8 border-b border-zinc-200/70 dark:border-zinc-800/70">
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
-                    <Briefcase size={16} /> Experience
-                  </h2>
-                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                    A snapshot of roles and impact.
-                  </p>
-                </div>
-
-                <div className="divide-y divide-zinc-200/70 dark:divide-zinc-800/70">
-                  {experience.map((item) => (
-                    <div
-                      key={`${item.role}-${item.company}`}
-                      className="p-6 md:p-8"
-                    >
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <h3 className="text-base font-bold tracking-tight">
-                            {item.role}
-                          </h3>
-                          {"companyUrl" in item && item.companyUrl ? (
-                            <a
-                              href={item.companyUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-zinc-600 dark:text-zinc-400 underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-100"
-                            >
-                              {item.company}
-                            </a>
-                          ) : (
-                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                              {item.company}
-                            </p>
-                          )}
-                        </div>
-                        <span className="w-fit rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/40 px-3 py-1 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
-                          {item.period}
-                        </span>
-                      </div>
-
-                      {item.bullets.length > 0 ? (
-                        <ul className="mt-4 space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
-                          {item.bullets.map((bullet) => (
-                            <li key={bullet} className="flex gap-3">
-                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
-                              <span>{bullet}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            <section id="education" className="scroll-mt-24">
-              <div className="rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 backdrop-blur-sm overflow-hidden">
-                <div className="p-6 md:p-8 border-b border-zinc-200/70 dark:border-zinc-800/70">
-                  <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 flex items-center gap-2">
-                    <GraduationCap size={16} /> Education
-                  </h2>
-                </div>
-
-                <div className="divide-y divide-zinc-200/70 dark:divide-zinc-800/70">
-                  {education.map((item) => (
-                    <div
-                      key={`${item.title}-${item.school}`}
-                      className="p-6 md:p-8"
-                    >
-                      <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <h3 className="font-semibold">{item.title}</h3>
-                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                            {item.school}
-                          </p>
-                        </div>
-                        <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                          {item.period}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            <section
-              id="contact"
-              className="scroll-mt-24 rounded-3xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white/60 dark:bg-zinc-950/40 backdrop-blur-sm p-6 md:p-8"
-            >
-              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-                Contact
-              </h2>
-              <p className="mt-3 text-sm text-zinc-700 dark:text-zinc-300">
-                Want to collaborate or hire? Send a message and I’ll reply as soon as possible.
-              </p>
-
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <a
-                  href={`mailto:${profile.email}`}
-                  className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/40 p-4 hover:bg-zinc-100/70 dark:hover:bg-zinc-900 transition-colors"
-                >
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <Mail size={18} /> Email
-                  </div>
-                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                    {profile.email}
-                  </p>
-                </a>
-
-                <a
-                  href={`tel:${profile.phone.replace(/\s+/g, "")}`}
-                  className="rounded-2xl border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/40 p-4 hover:bg-zinc-100/70 dark:hover:bg-zinc-900 transition-colors"
-                >
-                  <div className="flex items-center gap-2 text-sm font-semibold">
-                    <Phone size={18} /> Phone
-                  </div>
-                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                    {profile.phone}
-                  </p>
-                </a>
-              </div>
-
-              <p className="mt-10 text-xs text-zinc-500 dark:text-zinc-400">
-                © {new Date().getFullYear()} {profile.name}. All rights reserved.
-              </p>
-
-              <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                Developed by{" "}
-                <a
-                  href="https://grayvally.tech"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline underline-offset-4 hover:text-zinc-700 dark:hover:text-zinc-200"
-                >
-                  GrayVally Software Solutions
-                </a>
-              </p>
-            </section>
           </div>
-        </div>
+        </section>
+
+        {/* --- FOOTER --- */}
+        <footer className="mt-20 pt-8 border-t border-zinc-200 dark:border-zinc-800 text-center">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              © {new Date().getFullYear()} {profile.name}. All rights reserved.
+            </p>
+            <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">
+               Developed by <a href="https://grayvally.tech" className="hover:underline hover:text-zinc-900 dark:hover:text-zinc-300">GrayVally Software Solutions</a>
+            </p>
+        </footer>
+
       </main>
 
-      <SmoothScrollLink
-        href="#top"
-        className={`fixed bottom-5 right-5 z-50 rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-white/80 dark:bg-zinc-950/60 backdrop-blur-sm px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-white dark:hover:bg-zinc-950 transition-all duration-300 ${
-          showBackToTop
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4 pointer-events-none"
+      {/* --- BACK TO TOP --- */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className={`fixed bottom-6 right-6 z-40 p-3 rounded-full shadow-lg border border-zinc-200 bg-white text-zinc-900 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 ${
+          showBackToTop ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0 pointer-events-none"
         }`}
       >
-        Back to top
-      </SmoothScrollLink>
+        <ArrowUp size={20} />
+      </button>
+
     </div>
   );
 }
