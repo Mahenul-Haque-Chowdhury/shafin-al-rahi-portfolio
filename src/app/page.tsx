@@ -156,7 +156,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 selection:bg-zinc-900 selection:text-zinc-50">
+    <div className="min-h-screen bg-transparent text-zinc-900 dark:text-zinc-100 selection:bg-zinc-900 selection:text-zinc-50">
       
       {/* --- FLOATING NAVIGATION --- */}
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
