@@ -70,7 +70,7 @@ export default function Home() {
   ];
 
   const profile = {
-    name: "Shafin Al Rahi",
+    name: "Mohammad Shafin Al Rahi",
     role: "BBA Student • Logistics Dispatching • Event Management",
     headline:
       "Business Administration student and experienced professional with a background in Logistics Dispatching and Event Management. Strong in coordination, communication, and strategic decision-making.",
