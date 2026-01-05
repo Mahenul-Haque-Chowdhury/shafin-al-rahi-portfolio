@@ -80,17 +80,17 @@ export default function Home() {
   const socials = [
     {
       label: "LinkedIn",
-      href: "#", // Add your LinkedIn URL
+      href: "https://www.linkedin.com/in/mohammad-shafin-al-rahi-b43b5b177/",
       Icon: Linkedin,
     },
     {
       label: "Facebook",
-      href: "#", // Add your Facebook URL
+      href: "https://www.facebook.com/Shafin.AR.7",
       Icon: Facebook,
     },
     {
       label: "Instagram",
-      href: "#", // Add your Instagram URL
+      href: "https://www.instagram.com/viper_ar_69",
       Icon: Instagram,
     },
   ];
@@ -105,6 +105,21 @@ export default function Home() {
 
   // UPDATED: Experience from the uploaded Resume image
   const experience = [
+    {
+      role: "Head of Marketing",
+      company: "GrayVally Software Solutions",
+      companyUrl: "https://grayvally.tech",
+      period: "Dec 2025 — Present",
+      bullets: [
+        "Leading marketing initiatives and brand communication.",
+      ],
+    },
+    {
+      role: "Owner",
+      company: "Vephyr (Luxury Clothing Company)",
+      period: "Present",
+      bullets: [],
+    },
     {
       role: "Freight Dispatcher",
       company: "Auto Transport LLC",
@@ -391,23 +406,36 @@ export default function Home() {
                           <h3 className="text-base font-bold tracking-tight">
                             {item.role}
                           </h3>
-                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                            {item.company}
-                          </p>
+                          {"companyUrl" in item && item.companyUrl ? (
+                            <a
+                              href={item.companyUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-zinc-600 dark:text-zinc-400 underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-100"
+                            >
+                              {item.company}
+                            </a>
+                          ) : (
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                              {item.company}
+                            </p>
+                          )}
                         </div>
                         <span className="w-fit rounded-full border border-zinc-200/70 dark:border-zinc-800/70 bg-zinc-50/70 dark:bg-zinc-900/40 px-3 py-1 text-xs font-semibold text-zinc-600 dark:text-zinc-300">
                           {item.period}
                         </span>
                       </div>
 
-                      <ul className="mt-4 space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
-                        {item.bullets.map((bullet) => (
-                          <li key={bullet} className="flex gap-3">
-                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
-                            <span>{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      {item.bullets.length > 0 ? (
+                        <ul className="mt-4 space-y-2 text-sm text-zinc-700 dark:text-zinc-300">
+                          {item.bullets.map((bullet) => (
+                            <li key={bullet} className="flex gap-3">
+                              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-600" />
+                              <span>{bullet}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
                     </div>
                   ))}
                 </div>
