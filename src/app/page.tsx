@@ -1,68 +1,54 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import {
-  Briefcase,
-  GraduationCap,
-  Linkedin,
-  Facebook,
-  Instagram,
-  Mail,
-  Phone,
-  MapPin,
   ArrowRight,
-  Globe,
-  Package,
+  Briefcase,
   CalendarRange,
-  Menu,
-  X,
   ExternalLink,
+  Facebook,
+  Globe,
+  GraduationCap,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Package,
+  Phone,
 } from "lucide-react";
+import SmoothScrollLink from "@/components/SmoothScrollLink";
+import Header from "@/components/Header";
 
-// --- 3D COMPONENT: Logistics Globe ---
 function GlobalNetwork() {
   const meshRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.15;
-      meshRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.1;
-    }
+    if (!meshRef.current) return;
+    const time = state.clock.getElapsedTime();
+    meshRef.current.rotation.y = time * 0.15;
+    meshRef.current.rotation.x = Math.sin(time * 0.2) * 0.08;
   });
 
   return (
     <group ref={meshRef}>
-      <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-        {/* The World Sphere */}
+      <Float speed={2} rotationIntensity={0.45} floatIntensity={0.45}>
         <mesh>
           <sphereGeometry args={[2.2, 32, 32]} />
           <meshBasicMaterial color="#18181b" wireframe transparent opacity={0.1} />
         </mesh>
-        
-        {/* Longitudinal Lines / Routes */}
+
         <mesh rotation={[0, 0, Math.PI / 4]}>
           <torusGeometry args={[2.4, 0.02, 16, 100]} />
-          <meshStandardMaterial
-            color="#18181b"
-            emissive="#18181b"
-            emissiveIntensity={0.15}
-            transparent
-            opacity={0.12}
-          />
+          <meshStandardMaterial color="#18181b" emissive="#18181b" emissiveIntensity={0.15} transparent opacity={0.12} />
         </mesh>
+
         <mesh rotation={[Math.PI / 3, 0, 0]}>
           <torusGeometry args={[2.6, 0.02, 16, 100]} />
-          <meshStandardMaterial
-            color="#18181b"
-            emissive="#18181b"
-            emissiveIntensity={0.1}
-            transparent
-            opacity={0.08}
-          />
+          <meshStandardMaterial color="#18181b" emissive="#18181b" emissiveIntensity={0.1} transparent opacity={0.08} />
         </mesh>
       </Float>
       <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade speed={1} />
@@ -71,23 +57,14 @@ function GlobalNetwork() {
 }
 
 export default function Home() {
-  const [isNavOpen, setIsNavOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // --- DATA ---
   const profile = {
     name: "Mohammad Shafin Al Rahi",
     role: "Business Admin & Logistics Specialist",
     location: "Dhaka, Bangladesh",
     email: "shafin148@gmail.com",
     phone: "+880 170 336 3032",
-    photo: "/shafin.jpg", 
+    photo: "/shafin.jpg",
   };
 
   const experience = [
@@ -105,7 +82,7 @@ export default function Home() {
       subtitle: "Luxury Clothing Company",
       period: "Present",
       isCurrent: true,
-      desc: "founded and managing a luxury fashion brand, overseeing supply chain, design, and sales.",
+      desc: "Founded and managing a luxury fashion brand, overseeing supply chain, design, and sales.",
     },
     {
       role: "Freight Dispatcher",
@@ -153,67 +130,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-transparent text-zinc-200 font-sans selection:bg-amber-500/30 selection:text-amber-200">
-      
-      {/* --- NAVIGATION --- */}
-      <nav
-        className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-          scrolled ? "bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 py-4" : "bg-transparent py-6"
-        }`}
-      >
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-          <div className="text-xl font-bold tracking-tighter flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-linear-to-br from-amber-500 to-orange-700 flex items-center justify-center text-white text-xs font-serif">
-              SR
-            </span>
-            <span>Shafin Al Rahi</span>
-          </div>
-
-          <div className="hidden md:flex gap-8 text-sm font-medium text-zinc-400">
-            {["About", "Experience", "Skills", "Contact"].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-amber-500 transition-colors">
-                {item}
-              </a>
-            ))}
-          </div>
-
-          <button onClick={() => setIsNavOpen(!isNavOpen)} className="md:hidden text-zinc-300">
-            {isNavOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu */}
-      {isNavOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-zinc-950/90 backdrop-blur-sm md:hidden"
-          onClick={() => setIsNavOpen(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Mobile navigation"
-        >
-          <div
-            className="h-full w-full flex flex-col items-center justify-center gap-8"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {["About", "Experience", "Skills", "Contact"].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                onClick={() => setIsNavOpen(false)}
-                className="text-2xl font-bold text-zinc-400 hover:text-white"
-              >
-                {item}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      <Header />
 
       <main>
-        {/* --- HERO SECTION --- */}
-        <section id="about" className="relative flex flex-col items-center justify-start overflow-hidden pt-20 md:pt-24 pb-10 md:pb-12">
-          
-          {/* 3D Background */}
+        <section
+          id="about"
+          className="relative flex flex-col items-center justify-start overflow-hidden pb-8 pt-18 md:pb-10 md:pt-20"
+        >
           <div className="pointer-events-none absolute inset-0 z-0 opacity-60">
             <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
               <GlobalNetwork />
@@ -221,83 +144,84 @@ export default function Home() {
             </Canvas>
           </div>
 
-          <div className="z-10 px-4 sm:px-6 max-w-6xl mx-auto w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-              {/* Left: Profile Image */}
+          <div className="z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
+            <div className="grid grid-cols-1 items-center gap-7 md:grid-cols-2 md:gap-10">
               <div className="flex justify-center md:justify-start">
-                <div className="w-32 h-44 sm:w-36 sm:h-48 md:w-60 md:h-80 relative overflow-hidden p-1 bg-linear-to-b from-zinc-700 to-zinc-900 border border-zinc-700 shadow-2xl">
-                  <Image
-                    src={profile.photo}
-                    alt={profile.name}
-                    fill
-                    className="object-cover p-1"
-                    sizes="(min-width: 768px) 240px, (min-width: 640px) 144px, 128px"
-                    priority
-                  />
-                  <div className="absolute bottom-1 right-1 bg-amber-500 p-1.5 rounded-full border-2 border-zinc-950">
-                    <Globe size={14} className="text-zinc-950" />
+                <div className="relative">
+                  <div className="pointer-events-none absolute -inset-1 rounded-2xl bg-linear-to-r from-amber-500/35 to-orange-500/35 blur-sm md:hidden" />
+                  <div className="relative h-48 w-44 overflow-hidden rounded-2xl border border-zinc-600/80 bg-linear-to-b from-zinc-700 to-zinc-900 p-1.5 shadow-2xl sm:h-52 sm:w-48 md:h-80 md:w-60 md:rounded-none md:border-zinc-700 md:p-1">
+                    <Image
+                      src={profile.photo}
+                      alt={profile.name}
+                      fill
+                      className="rounded-xl object-cover object-[50%_70%] md:rounded-none md:object-center"
+                      sizes="(min-width: 768px) 240px, (min-width: 640px) 192px, 176px"
+                      priority
+                    />
+                    <div className="absolute bottom-2 right-2 rounded-full border border-zinc-800 bg-amber-500 p-1.5 shadow-lg md:bottom-1 md:right-1 md:border-2 md:border-zinc-950">
+                      <Globe size={14} className="text-zinc-950" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Right: Hero Content */}
-              <div className="text-center md:text-left space-y-8">
+              <div className="space-y-6 text-center md:text-left">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/50 border border-zinc-800 backdrop-blur-sm mb-6">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/50 px-4 py-1.5 backdrop-blur-sm">
+                    <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
                     <span className="text-xs font-medium text-zinc-400">Open for Business Opportunities</span>
                   </div>
-                  
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white mb-6">
-                    Strategic Logistics <br />
-                    <span className="text-transparent bg-clip-text bg-linear-to-r from-amber-200 via-amber-500 to-orange-600">
-                      & Brand Management
+
+                  <h1 className="mb-4 text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl">
+                    Strategic
+                    <br />
+                    <span className="bg-linear-to-r from-amber-200 via-amber-500 to-orange-600 bg-clip-text text-transparent">
+                      Logistics & Brand
                     </span>
+                    <br />
+                    Management
                   </h1>
 
-                  <p className="text-lg text-zinc-400 max-w-2xl md:mx-0 mx-auto leading-relaxed">
-                    Business Administration professional with a proven track record in 
-                    <strong> Freight Dispatching</strong>, <strong>Event Management</strong>, 
-                    and building <strong>Luxury Brands</strong>.
+                  <p className="mx-auto max-w-2xl text-base leading-relaxed text-zinc-400 md:mx-0 md:text-lg">
+                    Hello, I am Shafin. Studied BBA from ULAB, Dhaka. A Business Admin & Logistics Specialist with proven skills in
+                    <strong> Freight Dispatching</strong>, <strong>Event Management</strong>, and <strong>Luxury Brands (VEPHYR)</strong>.
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-3 sm:gap-4">
-                  <a
+                <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4 md:justify-start">
+                  <SmoothScrollLink
                     href="#contact"
-                    className="px-8 py-3 rounded-lg bg-amber-600 text-white font-semibold hover:bg-amber-700 transition-all shadow-lg shadow-amber-900/20 flex items-center justify-center gap-2 w-full sm:w-auto"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-7 py-3 font-semibold text-white shadow-lg shadow-amber-900/20 transition-all hover:bg-amber-700 sm:w-auto"
                   >
                     Let&apos;s Talk <ArrowRight size={18} />
-                  </a>
-                  <a
+                  </SmoothScrollLink>
+                  <SmoothScrollLink
                     href="#experience"
-                    className="px-8 py-3 rounded-lg border border-zinc-700 text-zinc-300 font-medium hover:bg-zinc-800 transition-all text-center w-full sm:w-auto"
+                    className="w-full rounded-lg border border-zinc-700 px-7 py-3 text-center font-medium text-zinc-300 transition-all hover:bg-zinc-800 sm:w-auto"
                   >
                     View Portfolio
-                  </a>
+                  </SmoothScrollLink>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Bottom Fade */}
-          <div className="pointer-events-none absolute bottom-0 w-full h-24 md:h-32 bg-linear-to-t from-zinc-950 to-transparent z-5"></div>
+          <div className="pointer-events-none absolute bottom-0 z-10 h-20 w-full bg-linear-to-t from-zinc-950 to-transparent md:h-24" />
         </section>
 
-        {/* --- STATS / EXPERTISE --- */}
-        <section className="relative z-20 mt-8 sm:mt-10 md:mt-12 px-4 sm:px-6 max-w-6xl mx-auto mb-16 md:mb-32">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <section className="relative z-20 mx-auto mb-14 mt-6 max-w-6xl px-4 sm:px-6 md:mb-24 md:mt-8">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {[
               { label: "Logistics", sub: "Dispatching & Routing", icon: Package },
               { label: "Management", sub: "Events & Teams", icon: Briefcase },
               { label: "Business", sub: "BBA Candidate", icon: GraduationCap },
-            ].map((stat, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-zinc-900/80 border border-zinc-800 backdrop-blur-md flex items-center gap-4 hover:border-amber-500/30 transition-colors group">
-                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 text-zinc-400 group-hover:text-amber-500 transition-colors">
+            ].map((stat) => (
+              <div key={stat.label} className="group flex items-center gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/80 p-6 backdrop-blur-md transition-colors hover:border-amber-500/30">
+                <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-3 text-zinc-400 transition-colors group-hover:text-amber-500">
                   <stat.icon size={24} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg text-white">{stat.label}</h3>
+                  <h3 className="text-lg font-bold text-white">{stat.label}</h3>
                   <p className="text-sm text-zinc-500">{stat.sub}</p>
                 </div>
               </div>
@@ -305,87 +229,73 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- EXPERIENCE SECTION --- */}
-        <section id="experience" className="px-4 sm:px-6 max-w-5xl mx-auto mb-20 md:mb-32 scroll-mt-24">
-          <div className="flex items-center justify-between mb-12">
+        <section id="experience" className="mx-auto mb-16 max-w-5xl scroll-mt-24 px-4 sm:px-6 md:mb-28">
+          <div className="mb-10 flex items-center justify-between">
             <h2 className="text-3xl font-bold text-white">Professional History</h2>
-            <div className="h-px flex-1 bg-zinc-800 ml-8"></div>
+            <div className="ml-8 h-px flex-1 bg-zinc-800" />
           </div>
 
           <div className="grid gap-6">
             {experience.map((job, idx) => (
-              <div 
-                key={idx} 
-                className={`group p-6 md:p-8 rounded-2xl border transition-all duration-300 ${
-                  job.isCurrent 
-                    ? "bg-zinc-900/40 border-amber-900/30 hover:border-amber-500/50" 
-                    : "bg-zinc-900/20 border-zinc-800 hover:border-zinc-700"
+              <div
+                key={`${job.role}-${idx}`}
+                className={`group rounded-2xl border p-6 transition-all duration-300 md:p-8 ${
+                  job.isCurrent ? "border-amber-900/30 bg-zinc-900/40 hover:border-amber-500/50" : "border-zinc-800 bg-zinc-900/20 hover:border-zinc-700"
                 }`}
               >
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+                <div className="mb-4 flex flex-col justify-between gap-4 md:flex-row md:items-start">
                   <div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
-                      {job.role}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1">
+                    <h3 className="text-xl font-bold text-white transition-colors group-hover:text-amber-400">{job.role}</h3>
+                    <div className="mt-1 flex items-center gap-2">
                       {job.link ? (
-                        <a href={job.link} target="_blank" className="text-zinc-400 font-medium hover:underline flex items-center gap-1">
+                        <a href={job.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 font-medium text-zinc-400 hover:underline">
                           {job.company} <ExternalLink size={12} />
                         </a>
                       ) : (
-                        <span className="text-zinc-400 font-medium">{job.company}</span>
+                        <span className="font-medium text-zinc-400">{job.company}</span>
                       )}
                       {job.subtitle && <span className="text-zinc-500">• {job.subtitle}</span>}
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-mono border ${
-                    job.isCurrent 
-                      ? "bg-amber-950/30 text-amber-500 border-amber-900/50" 
-                      : "bg-zinc-950 text-zinc-500 border-zinc-800"
-                  }`}>
+                  <span
+                    className={`rounded-full border px-3 py-1 text-xs font-mono ${
+                      job.isCurrent ? "border-amber-900/50 bg-amber-950/30 text-amber-500" : "border-zinc-800 bg-zinc-950 text-zinc-500"
+                    }`}
+                  >
                     {job.period}
                   </span>
                 </div>
-                <p className="text-zinc-400 text-sm leading-relaxed max-w-3xl">
-                  {job.desc}
-                </p>
+                <p className="max-w-3xl text-sm leading-relaxed text-zinc-400">{job.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* --- SKILLS & EDUCATION --- */}
-        <section id="skills" className="px-4 sm:px-6 max-w-5xl mx-auto mb-20 md:mb-32 scroll-mt-24">
-          <div className="grid md:grid-cols-2 gap-12">
-            
-            {/* Skills */}
+        <section id="skills" className="mx-auto mb-16 max-w-5xl scroll-mt-24 px-4 sm:px-6 md:mb-28">
+          <div className="grid gap-12 md:grid-cols-2">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+              <h2 className="mb-8 flex items-center gap-2 text-2xl font-bold text-white">
                 <Briefcase size={20} className="text-amber-500" /> Competencies
               </h2>
               <div className="flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <span 
-                    key={skill} 
-                    className="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-300 hover:text-white hover:border-zinc-600 transition-all cursor-default"
-                  >
+                  <span key={skill} className="cursor-default rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm text-zinc-300 transition-all hover:border-zinc-600 hover:text-white">
                     {skill}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Education */}
             <div>
-              <h2 className="text-2xl font-bold text-white mb-8 flex items-center gap-2">
+              <h2 className="mb-8 flex items-center gap-2 text-2xl font-bold text-white">
                 <GraduationCap size={20} className="text-amber-500" /> Education
               </h2>
               <div className="space-y-6">
                 {education.map((edu, idx) => (
-                  <div key={idx} className="pl-4 border-l-2 border-zinc-800">
-                    <h3 className="text-white font-medium">{edu.degree}</h3>
-                    <p className="text-sm text-zinc-500 mt-1">{edu.school}</p>
-                    <p className="text-xs text-zinc-600 mt-2 flex items-center gap-1">
+                  <div key={`${edu.degree}-${idx}`} className="border-l-2 border-zinc-800 pl-4">
+                    <h3 className="font-medium text-white">{edu.degree}</h3>
+                    <p className="mt-1 text-sm text-zinc-500">{edu.school}</p>
+                    <p className="mt-2 flex items-center gap-1 text-xs text-zinc-600">
                       <CalendarRange size={12} /> {edu.year}
                     </p>
                   </div>
@@ -395,43 +305,46 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- CONTACT FOOTER --- */}
-        <section id="contact" className="py-16 md:py-20 bg-zinc-900 border-t border-zinc-800">
-          <div className="px-6 max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-white mb-6">Let&apos;s Work Together</h2>
-            <p className="text-zinc-400 mb-10 max-w-lg mx-auto">
+        <section id="contact" className="border-t border-zinc-800 bg-zinc-900 py-16 md:py-20">
+          <div className="mx-auto max-w-4xl px-6 text-center">
+            <h2 className="mb-6 text-3xl font-bold text-white">Let&apos;s Work Together</h2>
+            <p className="mx-auto mb-10 max-w-lg text-zinc-400">
               Whether you need logistics strategies, event coordination, or brand management, I am ready to assist.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-4 mb-12">
-              <a href={`mailto:${profile.email}`} className="flex flex-col items-center justify-center p-8 rounded-2xl bg-zinc-950 border border-zinc-800 hover:border-amber-500/50 transition-colors group">
-                <Mail className="mb-4 text-zinc-500 group-hover:text-amber-500 transition-colors" size={32} />
+            <div className="mb-12 grid gap-4 md:grid-cols-2">
+              <a href={`mailto:${profile.email}`} className="group flex flex-col items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950 p-8 transition-colors hover:border-amber-500/50">
+                <Mail className="mb-4 text-zinc-500 transition-colors group-hover:text-amber-500" size={32} />
                 <span className="text-lg font-medium text-white">{profile.email}</span>
-                <span className="text-sm text-zinc-500 mt-1">Email Me</span>
+                <span className="mt-1 text-sm text-zinc-500">Email Me</span>
               </a>
-              <a href="tel:+8801703363032" className="flex flex-col items-center justify-center p-8 rounded-2xl bg-zinc-950 border border-zinc-800 hover:border-amber-500/50 transition-colors group">
-                <Phone className="mb-4 text-zinc-500 group-hover:text-amber-500 transition-colors" size={32} />
+              <a href="tel:+8801703363032" className="group flex flex-col items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950 p-8 transition-colors hover:border-amber-500/50">
+                <Phone className="mb-4 text-zinc-500 transition-colors group-hover:text-amber-500" size={32} />
                 <span className="text-lg font-medium text-white">{profile.phone}</span>
-                <span className="text-sm text-zinc-500 mt-1">Call Me</span>
+                <span className="mt-1 text-sm text-zinc-500">Call Me</span>
               </a>
             </div>
 
             <div className="flex justify-center gap-6">
-              {socials.map((s, i) => (
-                <a 
-                  key={i} 
-                  href={s.href} 
+              {socials.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.href}
                   target="_blank"
-                  className="p-3 rounded-full bg-zinc-950 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white transition-all"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-zinc-800 bg-zinc-950 p-3 text-zinc-400 transition-all hover:border-white hover:text-white"
                 >
-                  <s.icon size={20} />
+                  <social.icon size={20} />
                 </a>
               ))}
             </div>
-            
+
             <p className="mt-12 text-sm text-zinc-600">
               © {new Date().getFullYear()} Shafin Al Rahi. <br />
-              <span className="opacity-50">Dhaka, Bangladesh</span>
+              <span className="opacity-50">
+                <MapPin size={12} className="mr-1 inline-block" />
+                {profile.location}
+              </span>
             </p>
           </div>
         </section>

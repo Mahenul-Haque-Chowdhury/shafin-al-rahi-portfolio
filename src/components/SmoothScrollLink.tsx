@@ -26,7 +26,10 @@ export default function SmoothScrollLink({
     if (!target) return;
 
     event.preventDefault();
-    target.scrollIntoView({ behavior: "smooth" });
+
+    const headerOffset = 96;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "smooth" });
     window.history.replaceState(null, "", href);
   };
 
